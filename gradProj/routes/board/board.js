@@ -2,40 +2,66 @@ var express = require('express');
 var router = express.Router();
 var moment = require('moment');
 var request = require('async-request');
+var jwt = require('../../module/jwt');
+var upload = require('../../config/multer').uploadBoardImage;
 var pool = require('../../module/pool.js');
 
 //3000/board/write
-router.post('/write',async function(req,res){
+router.post('/write',upload.array('board_photos', 20), async function(req,res){
     var title = req.body.board_title;
     var content = req.body.board_content;
-    var uid = req.body.user_index;
-    var photo = req.body.board_photo;//고쳐야 함
+    //var uid = req.body.user_index;
+    let bImages = req.files;
+    let token = req.headers.token;
     var category = req.body.board_category;
     var time = moment().format('YYYY-MM-DD HH:mm:ss'); //ec2에서 시간바꿔주기.
     
-    
-    if(!title || !uid || !category|| !time||!content){
+    if(!token){
+        console.log("no token");
         res.status(400).send({
-            message:"fail writing board from client"
+            message:"null value"
         });
-    
-    
-    }else
-    {
-        var writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo) values (?,?,?,?,?,?);';
-        var writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,time,category,photo]);
+    }else{
 
-        console.log(writeBoard); 
+        if(!title && !category && !time && !content){//바디에 안들어올 때
+            res.status(400).send({
+                message:"fail writing board from client"
+            });
 
-        if(writeBoard){
-            res.status(201).send({
-                message : "success writing board"            
-            });
-        }
-        else {
-            res.status(500).send({
-                message : "fail writing board from server"
-            });
+        }else
+        {
+            let decoded = jwt.verify(token);
+            if(decoded === -1){//토큰값이 에러가 있다면
+                res.status(500).send({
+                    message:"token err"
+                });
+            }else{
+            
+            console.log(token);
+            let tempArr =[];
+            for(let i = 0; i<bImages.length;i++){
+                tempArr[i] = bImages[i].location;
+
+            }
+            let joinImages = tempArr.join(',');//이미지들을 ','로 엮어준다.
+            console.log(joinImages);
+            console.log(decoded.user_index);
+
+            var writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo) values (?,?,?,?,?,?);';
+            var writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,decoded.user_index,time,category,joinImages]);
+
+            console.log(writeBoard); 
+
+            if(writeBoard){
+                res.status(201).send({
+                    message : "success writing board"            
+                });
+            }
+            else {
+                res.status(500).send({
+                    message : "fail writing board from server"
+                });}
+            }
         }
     }
 

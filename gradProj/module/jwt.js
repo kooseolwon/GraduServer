@@ -5,16 +5,16 @@ const secretKey = require('../config/secretKey.js').jwtSecret;
 
 module.exports = {
 
-    sign : function(user_idx) {
+    sign : function(user_index) {
         //옵션
         const options = {
             algorithm : "HS256",
-            expiresIn : 60 * 60 * 24 * 7 //7 days
+            expiresIn : 60 * 60 * 24 * 30 //30 days
         };
 
         //페이로드
         const payload = {
-            user_idx : user_idx
+            user_index : user_index
         };
 
         //토큰 생성
