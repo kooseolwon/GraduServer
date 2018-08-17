@@ -1,20 +1,20 @@
-var express = require('express');
-var router = express.Router();
-var moment = require('moment');
-var request = require('async-request');
-var jwt = require('../../module/jwt');
-var upload = require('../../config/multer').uploadBoardImage;
-var pool = require('../../module/pool.js');
+const express = require('express');
+const router = express.Router();
+const moment = require('moment');
+const request = require('async-request');
+const jwt = require('../../module/jwt');
+const upload = require('../../config/multer').uploadBoardImage;
+const pool = require('../../module/pool.js');
 
 //3000/board/write
 router.post('/write',upload.array('board_photos', 20), async function(req,res){
-    var title = req.body.board_title;
-    var content = req.body.board_content;
+    let title = req.body.board_title;
+    let content = req.body.board_content;
     //var uid = req.body.user_index;
     let bImages = req.files;
     let token = req.headers.token;
-    var category = req.body.board_category;
-    var time = moment().format('YYYY-MM-DD HH:mm:ss'); //ec2에서 시간바꿔주기.
+    let category = req.body.board_category;
+    let time = moment().format('YYYY-MM-DD HH:mm:ss'); //ec2에서 시간바꿔주기.
     
     if(!token){
         console.log("no token");
@@ -47,8 +47,8 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             console.log(joinImages);
             console.log(decoded.user_index);
 
-            var writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo) values (?,?,?,?,?,?);';
-            var writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,decoded.user_index,time,category,joinImages]);
+            let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo) values (?,?,?,?,?,?);';
+            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,decoded.user_index,time,category,joinImages]);
 
             console.log(writeBoard); 
 
@@ -93,7 +93,7 @@ router.get('/show',async function(req,res){
 
 //board/detail/:params
 router.get('/detail/:board_index',async function(req,res){
-    var boardindex = req.params.board_index;
+    let boardindex = req.params.board_index;
 
     if(!boardindex){
         res.status(400).send({

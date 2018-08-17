@@ -9,6 +9,7 @@
     "async-request": "^1.2.0",
     "aws-sdk": "^2.292.0",
     "cookie-parser": "~1.4.3",
+    "crypto": "^1.0.1",
     "crypto-promise": "^2.0.0",
     "debug": "~2.6.9",
     "express": "^4.16.3",

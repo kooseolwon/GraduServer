@@ -9,7 +9,7 @@ router.post('/',async(req,res)=>{
     let user_pw = req.body.user_pw;
     let user_name = req.body.user_name;
 
-    if(!user_id|| !user_pw || !user_name){
+    if(!user_id && !user_pw && !user_name){
         res.status(400).send({
             message: "fail signup from client, null value"
         });
