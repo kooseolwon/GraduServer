@@ -70,21 +70,66 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
 
 router.get('/show',async function(req,res){
 // var board_category = req.params.board_category;
-        
+        let category = req.query.board_category;
         let showingQuery = `SELECT board_index,board_title, board_time, board_category,user_name 
-        FROM board_table JOIN user_table ON board_table.user_index = user_table.user_index`;//0으로 바꿔야함
+        FROM board_table JOIN user_table ON board_table.user_index = user_table.user_index
+        `;//0으로 바꿔야함
+
         let showingResult = await pool.queryParam_None(showingQuery);
-        
-        
-        if(!showingResult){
-            res.status(500).send({
-                message : "fail showing board from server"
-            });
+        if(category === "[]")
+        {//지역입력안하면
+            console.log(00);
+            console.log(category);
+            if(!showingResult){
+                res.status(500).send({
+                    message : "fail showing board from server"
+                });
+            }else{
+                res.status(200).send({
+                    message : "success showing board",
+                    data : showingResult
+                });
+            }
+            
         }else{
-            res.status(200).send({
-                message : "success showing board",
-                data : showingResult
+            
+            console.log(11);
+            // 지역 입력 하면
+            // "[1,2,3]" 을 [1,2,3] 으로 바꿈
+            console.log(showingResult);
+            let areaList = Array.from(category);
+            areaList.splice(0, 1);
+            areaList.pop();
+
+            let areaString = areaList.join("");
+            let realareaList = areaString.split(",").map(Number);
+            console.log(realareaList);
+
+            showingResult = showingResult.filter((value)=>{
+                if(realareaList.includes(value.board_category)){
+                    console.log("aa"+value.board_category);
+                    return true;
+                }else{
+                    console.log("bb"+value.board_category);
+                    return false;
+                }
             });
+
+
+
+
+
+            if(!showingResult){
+                res.status(500).send({
+                    message : "fail showing board from server"
+                });
+            }else{
+                res.status(200).send({
+                    message : "success showing board",
+                    data : showingResult
+                });
+            }
+            
         }
         
         
