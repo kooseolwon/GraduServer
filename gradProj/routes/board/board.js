@@ -32,7 +32,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
         {
             
             
-            console.log(token);
+           // console.log(token);
             let tempArr =[];
             for(let i = 0; i<bImages.length;i++){
                 tempArr[i] = bImages[i].location;
