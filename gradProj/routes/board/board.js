@@ -34,14 +34,20 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             
            // console.log(token);
             let tempArr =[];
-            for(let i = 0; i<bImages.length;i++){
-                tempArr[i] = bImages[i].location;
+            let joinImages;
+            if(!bImages){
+                joinImages = "";
+            
+            }else{
+                
+                for(let i = 0; i<bImages.length;i++){
+                    tempArr[i] = bImages[i].location;
 
+                }
+                joinImages = tempArr.join(',');//이미지들을 ','로 엮어준다.
             }
-            let joinImages = tempArr.join(',');//이미지들을 ','로 엮어준다.
             console.log(joinImages);
             //console.log(decoded.user_index);
-
             let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo) values (?,?,?,?,?,?);';
             let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,time,category,joinImages]);
 
