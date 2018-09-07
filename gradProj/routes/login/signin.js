@@ -11,7 +11,7 @@ router.post('/',async (req,res) =>{
     let user_id = req.body.user_id;
     let user_pw = req.body.user_pw;
 
-    if(!user_id && !user_pw){
+    if(!user_id || !user_pw){
 
         res.status(400).send({
             message:"fail signin from client, null value"

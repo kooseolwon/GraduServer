@@ -10,14 +10,14 @@ const pool = require('../../module/pool.js');
 router.post('/write',upload.array('board_photos', 20), async function(req,res){
     let title = req.body.board_title;
     let content = req.body.board_content;
-    //var uid = req.body.user_index;
+    var uid = req.body.user_index;
     let bImages = req.files;
-    let token = req.headers.token;
+    //let token = req.headers.token;
     let category = req.body.board_category;
     let time = moment().format('YYYY-MM-DD HH:mm:ss'); //ec2에서 시간바꿔주기.
     
-    if(!token){
-        console.log("no token");
+    if(!uid){
+        console.log("no user_idx");
         res.status(400).send({
             message:"null value"
         });
@@ -30,12 +30,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
 
         }else
         {
-            let decoded = jwt.verify(token);
-            if(decoded === -1){//토큰값이 에러가 있다면
-                res.status(500).send({
-                    message:"token err"
-                });
-            }else{
+            
             
             console.log(token);
             let tempArr =[];
@@ -48,7 +43,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             console.log(decoded.user_index);
 
             let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo) values (?,?,?,?,?,?);';
-            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,decoded.user_index,time,category,joinImages]);
+            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,time,category,joinImages]);
 
             console.log(writeBoard); 
 
@@ -61,7 +56,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
                 res.status(500).send({
                     message : "fail writing board from server"
                 });}
-            }
+            
         }
     }
 

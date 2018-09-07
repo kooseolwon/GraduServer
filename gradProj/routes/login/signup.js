@@ -10,7 +10,7 @@ router.post('/',async(req,res)=>{
     let user_name = req.body.user_name;
     let user_area = req.body.user_area;
     console.log(req.body);
-    if(!user_id && !user_pw && !user_name&& !user_area){
+    if(!user_id || !user_pw || !user_name || !user_area){
         res.status(400).send({
             message: "fail signup from client, null value"
         });
