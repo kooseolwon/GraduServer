@@ -12,7 +12,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
     let content = req.body.board_content;
     let uid = req.body.user_index;
     let bImages = req.files;
-    let bLocation = req.body.board_location || "";
+    let bLocation = req.body.board_location;
     //let token = req.headers.token;
     let category = req.body.board_category;
     let time = moment().format('YYYY-MM-DD HH:mm:ss'); //ec2에서 시간바꿔주기.
@@ -24,7 +24,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
         });
     }else{
 
-        if(!title && !category && !time && !content){//바디에 안들어올 때
+        if(!title || !category || !time || !content){//바디에 안들어올 때
             res.status(400).send({
                 message:"fail writing board from client"
             });
