@@ -151,7 +151,7 @@ router.get('/detail/:board_index',async function(req,res){
 
     }else{
 
-        let detailQuery = `SELECT board_table.board_index, board_location ,board_title, board_time, board_category,board_photo,user_name
+        let detailQuery = `SELECT board_table.board_index, board_location,board_content ,board_title, board_time, board_category,board_photo,user_name
         FROM board_table JOIN user_table ON user_table.user_index= board_table.user_index WHERE board_index=?`;
         let detailResult = await pool.queryParam_Arr(detailQuery,[boardindex]);
         if(!detailResult){
