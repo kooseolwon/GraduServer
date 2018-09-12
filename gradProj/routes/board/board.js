@@ -10,8 +10,9 @@ const pool = require('../../module/pool.js');
 router.post('/write',upload.array('board_photos', 20), async function(req,res){
     let title = req.body.board_title;
     let content = req.body.board_content;
-    var uid = req.body.user_index;
+    let uid = req.body.user_index;
     let bImages = req.files;
+    let bLocation = req.body.board_location || "";
     //let token = req.headers.token;
     let category = req.body.board_category;
     let time = moment().format('YYYY-MM-DD HH:mm:ss'); //ec2에서 시간바꿔주기.
@@ -30,20 +31,29 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
 
         }else
         {
+            let joinImages;
             
             
-           // console.log(token);
-            let tempArr =[];
+            // console.log(token);
+            if(!bImages){
+                joinImages ='';
+
+            }else{
+                let tempArr =[];
             for(let i = 0; i<bImages.length;i++){
                 tempArr[i] = bImages[i].location;
 
             }
-            let joinImages = tempArr.join(',');//이미지들을 ','로 엮어준다.
+            joinImages = tempArr.join(',');//이미지들을 ','로 엮어준다.
             console.log(joinImages);
+
+            }
+        
+            
             //console.log(decoded.user_index);
 
-            let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo) values (?,?,?,?,?,?);';
-            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,time,category,joinImages]);
+            let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo,board_location) values (?,?,?,?,?,?,?);';
+            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,time,category,joinImages,bLocation]);
 
             console.log(writeBoard); 
 
