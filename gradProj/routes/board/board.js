@@ -79,7 +79,7 @@ router.get('/show',async function(req,res){
         let showingQuery = `SELECT board_index,board_title,date_format(board_time,"%Y-%m-%d %r") AS board_time, board_category,user_name 
         FROM board_table JOIN user_table ON board_table.user_index = user_table.user_index order by board_index asc
         `;//0으로 바꿔야함
-
+        console.log(category);
         let showingResult = await pool.queryParam_None(showingQuery);
         if(category === "[]"|| category === 0)
         {//지역입력안하면
