@@ -76,7 +76,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
 router.get('/show',async function(req,res){
 // var board_category = req.params.board_category;
         let category = req.query.board_category || 0;
-        let showingQuery = `SELECT board_index,board_title,date_format(board_time,"%Y-%m-%d") AS board_time, board_category,user_name 
+        let showingQuery = `SELECT board_index,board_title,date_format(board_time,"%Y-%m-%d %r") AS board_time, board_category,user_name 
         FROM board_table JOIN user_table ON board_table.user_index = user_table.user_index
         `;//0으로 바꿔야함
 
