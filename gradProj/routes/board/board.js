@@ -33,7 +33,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
         {
             let joinImages;
             
-            
+            console.log(bImages);
             // console.log(token);
             if(!bImages){
                 joinImages ='';
@@ -52,7 +52,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             
             //console.log(decoded.user_index);
 
-            let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_category,board_photo,board_location) values (?,?,?,?,?,?,?);';
+            let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_category,board_photo,board_location) values (?,?,?,?,?,?);';
             let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,category,joinImages,bLocation]);
 
             console.log(writeBoard); 
