@@ -15,7 +15,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
     let bLocation = req.body.board_location;
     //let token = req.headers.token;
     let category = req.body.board_category;
-    let time = moment().format('YYYY-MM-DD HH:mm:ss'); //ec2에서 시간바꿔주기.
+    //let time = moment().format('YYYY-MM-DD HH:mm:ss'); //ec2에서 시간바꿔주기.
     
     if(!uid){
         console.log("no user_idx");
@@ -24,7 +24,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
         });
     }else{
 
-        if(!title || !category || !time || !content){//바디에 안들어올 때
+        if(!title || !category || !content){//바디에 안들어올 때
             res.status(400).send({
                 message:"fail writing board from client"
             });
@@ -52,8 +52,8 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             
             //console.log(decoded.user_index);
 
-            let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_time,board_category,board_photo,board_location) values (?,?,?,?,?,?,?);';
-            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,time,category,joinImages,bLocation]);
+            let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_category,board_photo,board_location) values (?,?,?,?,?,?,?);';
+            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,category,joinImages,bLocation]);
 
             console.log(writeBoard); 
 
@@ -76,7 +76,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
 router.get('/show',async function(req,res){
 // var board_category = req.params.board_category;
         let category = req.query.board_category || 0;
-        let showingQuery = `SELECT board_index,board_title, board_time, board_category,user_name 
+        let showingQuery = `SELECT board_index,board_title,date_format(board_time,"%Y-%m-%d") AS board_time, board_category,user_name 
         FROM board_table JOIN user_table ON board_table.user_index = user_table.user_index
         `;//0으로 바꿔야함
 
