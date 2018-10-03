@@ -9,8 +9,9 @@ router.post('/',async(req,res)=>{
     let user_pw = req.body.user_pw;
     let user_name = req.body.user_name;
     let user_area = req.body.user_area;
+    let deviceToken = req.body.deviceToken;
     console.log(req.body);
-    if(!user_id || !user_pw || !user_name || !user_area){
+    if(!user_id || !user_pw || !user_name || !user_area || !deviceToken){
         res.status(400).send({
             message: "fail signup from client, null value"
         });
@@ -26,8 +27,8 @@ router.post('/',async(req,res)=>{
             const salt = await crypto.randomBytes(32);
             const hashedpw = await crypto.pbkdf2(user_pw, salt.toString('base64'), 100000, 32, 'sha512');
 
-            let insertQuery = 'INSERT INTO user_table (user_id, user_pw, user_salt,user_name, user_area) VALUES (?,?,?,?,?)';
-            let insertResult = await db.queryParam_Arr(insertQuery,[user_id, hashedpw.toString('base64'),salt.toString('base64'),user_name,user_area]);
+            let insertQuery = 'INSERT INTO user_table (user_id, user_pw, user_salt,user_name, user_area,token) VALUES (?,?,?,?,?,?)';
+            let insertResult = await db.queryParam_Arr(insertQuery,[user_id, hashedpw.toString('base64'),salt.toString('base64'),user_name,user_area,deviceToken]);
 
             if(!insertResult){
                 res.status(500).send({
