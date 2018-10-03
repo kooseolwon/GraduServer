@@ -1,10 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
+
+const FCM = require('fcm-node');
 const request = require('async-request');
 const jwt = require('../../module/jwt');
 const upload = require('../../config/multer').uploadBoardImage;
 const pool = require('../../module/pool.js');
+const unirest = require('unirest');
+
+const serverKey = require('../../config/secretKey').push;
+const fcm = new FCM(serverKey);
+
 
 //3000/board/write
 router.post('/write',upload.array('board_photos', 20), async function(req,res){
@@ -56,16 +63,65 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,category,joinImages,bLocation]);
 
             console.log(writeBoard); 
+            let tokenQuery = `SELECT token FROM user_table WHERE user_area = ?`;
+            let tokenResult = await pool.queryParam_Arr(tokenQuery,[category]);
+            console.log(tokenResult);
+            let tokenArr = new Array;
+            for(let i = 0; i< tokenResult.length;i++ ){
+                if(tokenResult[i]["token"]!==null){
+                    tokenArr.push(tokenResult[i]["token"]);
+                }
+
+            }
+            console.log(tokenArr);
+            var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+                registration_ids:tokenArr
+                ,
+                collapse_key: 'your_collapse_key',
+                
+                notification: {
+                    title: 'Title of your push notification', 
+                    body: '꺄르륵' //노드로 발송하는 푸쉬 메세지
+                },
+                
+                data: {  //you can send only notification or only data(or include both)
+                    my_key: 'my value',
+                    my_another_key: 'my another value'
+                }
+            };
+    
+    
+        
+    
+    
+        
+        
+        fcm.send(message, function(err, response){
+            if (err) {
+                console.log("Something has gone wrong!");
+                console.log(err);
+            } else {
+                console.log("Successfully sent with response: ", response);
+            }
+        });
+
+    
+
+
+
 
             if(writeBoard){
                 res.status(201).send({
-                    message : "success writing board"            
+                    message : "success writing board",
+                    data : category            
                 });
             }
             else {
                 res.status(500).send({
                     message : "fail writing board from server"
-                });}
+                });
+            }
+
             
         }
     }
