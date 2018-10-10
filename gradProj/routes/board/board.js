@@ -80,7 +80,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
                 
                 notification: {
                     title: "", 
-                    body:category+"에 글이 등록되었습니다."  //노드로 발송하는 푸쉬 메세지
+                    body:"관심지역에 글이 등록되었습니다."  //노드로 발송하는 푸쉬 메세지
                 },
                 
                 data: {  //you can send only notification or only data(or include both)
