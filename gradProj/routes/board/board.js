@@ -15,7 +15,7 @@ const fcm = new FCM(serverKey);
 
 //3000/board/write
 router.post('/write',upload.array('board_photos', 20), async function(req,res){
-    let title = req.body.board_title;
+    let Btitle = req.body.board_title;
     let content = req.body.board_content;
     let uid = req.body.user_index;
     let bImages = req.files;
@@ -31,7 +31,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
         });
     }else{
 
-        if(!title || !category || !content){//바디에 안들어올 때
+        if(!Btitle || !category || !content){//바디에 안들어올 때
             res.status(400).send({
                 message:"fail writing board from client"
             });
@@ -60,7 +60,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             //console.log(decoded.user_index);
 
             let writeBoardQuery = 'INSERT INTO board_table (board_title,board_content,user_index,board_category,board_photo,board_location) values (?,?,?,?,?,?);';
-            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [title,content,uid,category,joinImages,bLocation]);
+            let writeBoard = await pool.queryParam_Arr(writeBoardQuery, [Btitle,content,uid,category,joinImages,bLocation]);
 
             console.log(writeBoard); 
             let tokenQuery = `SELECT token FROM user_table WHERE user_area = ?`;
@@ -74,14 +74,13 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
 
             }
             console.log(tokenArr);
-            var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-                registration_ids:tokenArr
-                ,
+            let message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+                registration_ids:tokenArr,
                 collapse_key: 'your_collapse_key',
                 
                 notification: {
-                    title: 'Title of your push notification', 
-                    body: '꺄르륵' //노드로 발송하는 푸쉬 메세지
+                    title: "", 
+                    body:category+"에 글이 등록되었습니다."  //노드로 발송하는 푸쉬 메세지
                 },
                 
                 data: {  //you can send only notification or only data(or include both)
@@ -89,13 +88,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
                     my_another_key: 'my another value'
                 }
             };
-    
-    
-        
-    
-    
-        
-        
+
         fcm.send(message, function(err, response){
             if (err) {
                 console.log("Something has gone wrong!");
@@ -105,15 +98,13 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             }
         });
 
-    
-
-
-
-
             if(writeBoard){
                 res.status(201).send({
                     message : "success writing board",
-                    data : category            
+                    data : {
+                        board_category : category,
+                        board_index : writeBoard["insertId"]
+                    }            
                 });
             }
             else {
