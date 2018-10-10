@@ -128,7 +128,7 @@ router.get('/show',async function(req,res){
         `;//0으로 바꿔야함
         console.log(category);
         let showingResult = await pool.queryParam_None(showingQuery);
-        if(category === "[]"|| category === 0 || category ==="[0]"|| category === -1 || category === "[-1]" )
+        if(category === "[]"|| category === 0 || category ==="[0]")
         {//지역입력안하면
             
             if(!showingResult){
