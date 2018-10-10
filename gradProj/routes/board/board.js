@@ -106,11 +106,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
 
             if(writeBoard){
                 res.status(201).send({
-                    message : "success writing board",
-                    data : {
-                        board_category : category,
-                        board_index : writeBoard["insertId"]
-                    }            
+                    message : "success writing board"           
                 });
             }
             else {
