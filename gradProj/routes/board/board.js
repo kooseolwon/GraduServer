@@ -70,10 +70,15 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
             for(let i = 0; i< tokenResult.length;i++ ){
                 if(tokenResult[i]["token"]!==null){
                     tokenArr.push(tokenResult[i]["token"]);
+                
                 }
+                console.log(tokenArr);
 
             }
-            console.log(tokenArr);
+            if(tokenArr.length > 0){
+            
+            
+            //console.log(tokenArr);
             let message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
                 registration_ids:tokenArr,
                 collapse_key: 'your_collapse_key',
@@ -97,6 +102,7 @@ router.post('/write',upload.array('board_photos', 20), async function(req,res){
                 console.log("Successfully sent with response: ", response);
             }
         });
+    }
 
             if(writeBoard){
                 res.status(201).send({
